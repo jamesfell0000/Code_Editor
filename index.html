@@ -499,8 +499,18 @@
         // -----------------------------------------------------
         // PWA CONFIG
         // -----------------------------------------------------
+        // -----------------------------------------------------
+        // PWA CONFIG FOR GITHUB PAGES
+        // -----------------------------------------------------
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/Code_Editor/sw.js', { scope: '/Code_Editor/' })
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }).catch(err => {
+                    console.error('ServiceWorker registration failed: ', err);
+                });
+            });
         }
 
         let installPrompt;
