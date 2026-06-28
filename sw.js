@@ -1,4 +1,4 @@
-const CACHE_NAME = 'code-editor-gh-v5';
+const CACHE_NAME = 'code-editor-gh-v7';
 const ASSETS = [
   '/Code_Editor/',
   '/Code_Editor/index.html',
@@ -23,7 +23,8 @@ const ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/julia/julia.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/julia/julia.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/octave/octave.min.js'
 ];
 
 self.addEventListener('install', (e) => {
