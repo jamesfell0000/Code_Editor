@@ -1,8 +1,8 @@
-const CACHE_NAME = 'code-editor-md3-v4'; // Bumped to v4 for MD3 assets
+const CACHE_NAME = 'code-editor-gh-v1';
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
+  '/Code_Editor/',
+  '/Code_Editor/index.html',
+  '/Code_Editor/manifest.json',
   
   // Google Fonts & Material Symbols 
   'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
@@ -33,13 +33,14 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.map((key) => { if (key !== CACHE_NAME) return caches.delete(key); })))
+    caches.keys().then((keys) => Promise.all(keys.map((key) => { 
+        if (key !== CACHE_NAME) return caches.delete(key); 
+    })))
   );
+  return self.clients.claim();
 });
 
-// Cache-First strategy to ensure Offline Access works seamlessly
 self.addEventListener('fetch', (e) => {
-  // Check for external font files requested by the Google Fonts CSS
   if (e.request.url.startsWith('https://fonts.gstatic.com')) {
     e.respondWith(
       caches.match(e.request).then((cachedResponse) => {
