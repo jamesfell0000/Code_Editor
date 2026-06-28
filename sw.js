@@ -1,4 +1,4 @@
-const CACHE_NAME = 'code-editor-gh-v1';
+const CACHE_NAME = 'code-editor-gh-v2';
 const ASSETS = [
   '/Code_Editor/',
   '/Code_Editor/index.html',
@@ -22,7 +22,7 @@ const ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/julia/julia.min.js',
   
   // App Icon
-  'https://cdn-icons-png.flaticon.com/512/2911/2911230.png'
+  '/Code_Editor/icon.svg'
 ];
 
 self.addEventListener('install', (e) => {
