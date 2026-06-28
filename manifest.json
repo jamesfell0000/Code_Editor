@@ -9,7 +9,7 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": ".index.html",
+  "start_url": "./Code_Editor/index.html",
   "background_color": "#1e1e1e",
   "theme_color": "#1e1e1e",
   "display": "standalone",
