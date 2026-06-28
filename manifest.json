@@ -9,9 +9,10 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": "./Code_Editor/index.html",
-  "background_color": "#1e1e1e",
-  "theme_color": "#1e1e1e",
+  "start_url": "/Code_Editor/",
+  "scope": "/Code_Editor/",
+  "background_color": "#1a1c1e",
+  "theme_color": "#1a1c1e",
   "display": "standalone",
   "orientation": "any"
 }
