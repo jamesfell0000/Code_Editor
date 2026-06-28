@@ -1,28 +1,29 @@
-const CACHE_NAME = 'code-editor-gh-v2';
+const CACHE_NAME = 'code-editor-gh-v5';
 const ASSETS = [
   '/Code_Editor/',
   '/Code_Editor/index.html',
   '/Code_Editor/manifest.json',
+  '/Code_Editor/icon.svg',
   
   // Google Fonts & Material Symbols 
   'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
   'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
   
-  // CodeMirror Dependencies
+  // CodeMirror Core & Addon Framework Assets
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material-darker.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/simple.min.js',
+  
+  // Highlighting Lexers
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/r/r.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/julia/julia.min.js',
-  
-  // App Icon
-  '/Code_Editor/icon.svg'
+  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/julia/julia.min.js'
 ];
 
 self.addEventListener('install', (e) => {
@@ -55,6 +56,5 @@ self.addEventListener('fetch', (e) => {
     );
     return;
   }
-
   e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
 });
