@@ -1,62 +1,31 @@
-const CACHE_NAME = 'code-editor-gh-v8';
-const ASSETS = [
-  '/Code_Editor/',
-  '/Code_Editor/index.html',
-  '/Code_Editor/manifest.json',
-  '/Code_Editor/icon.svg',
-  
-  // Google Fonts & Material Symbols 
-  'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
-  'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
-  
-  // CodeMirror Core & Addon Framework Assets
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material-darker.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/simple.min.js',
-  
-  // Highlighting Lexers
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/r/r.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/css/css.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/julia/julia.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/octave/octave.min.js'
-];
+// --- Font Size Control Logic ---
+        const fontSizeLabel = document.getElementById('fontSizeLabel');
+        let currentFontSize = 15;
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).then(() => self.skipWaiting())
-  );
-});
+        function updateFontSize(delta) {
+            currentFontSize = Math.max(10, Math.min(30, currentFontSize + delta));
+            fontSizeLabel.textContent = currentFontSize + 'px';
+            htmlDoc.style.setProperty('--editor-font-size', currentFontSize + 'px');
+            editor.refresh();
+            saveSettings();
+        }
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.map((key) => { 
-        if (key !== CACHE_NAME) return caches.delete(key); 
-    })))
-  );
-  return self.clients.claim();
-});
+        document.getElementById('fontDec').addEventListener('click', () => updateFontSize(-1));
+        document.getElementById('fontInc').addEventListener('click', () => updateFontSize(1));
 
-self.addEventListener('fetch', (e) => {
-  if (e.request.url.startsWith('https://fonts.gstatic.com')) {
-    e.respondWith(
-      caches.match(e.request).then((cachedResponse) => {
-        if (cachedResponse) return cachedResponse;
-        return fetch(e.request).then((networkResponse) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, networkResponse.clone());
-            return networkResponse;
-          });
-        });
-      })
-    );
-    return;
-  }
-  e.respondWith(caches.match(e.request).then((res) => res || fetch(e.request)));
-});
+        // Updated Load Settings
+        function loadSettings() {
+            const stored = localStorage.getItem('codeEditorSettings');
+            const settings = stored ? JSON.parse(stored) : { theme: 'dark', wrap: true, invisibles: false, fontSize: 15 };
+
+            htmlDoc.setAttribute('data-theme', settings.theme);
+            editor.setOption('theme', settings.theme === 'dark' ? 'material-darker' : 'eclipse');
+            
+            // ... (keep existing theme and wrap logic)
+
+            // Apply font size
+            currentFontSize = settings.fontSize || 15;
+            fontSizeLabel.textContent = currentFontSize + 'px';
+            htmlDoc.style.setProperty('--editor-font-size', currentFontSize + 'px');
+            editor.refresh();
+        }
