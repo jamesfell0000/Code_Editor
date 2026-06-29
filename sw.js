@@ -1,4 +1,4 @@
-const CACHE_NAME = 'code-editor-gh-v7';
+const CACHE_NAME = 'code-editor-gh-v8';
 const ASSETS = [
   '/Code_Editor/',
   '/Code_Editor/index.html',
@@ -17,6 +17,7 @@ const ASSETS = [
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/simple.min.js',
   
   // Highlighting Lexers
+  'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/r/r.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js',
