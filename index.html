@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Editor</title>
+    <link rel="manifest" href="/Code_Editor/manifest.json">
+    <meta name="theme-color" content="#1e1e24" id="meta-theme-color">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material-darker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css">
+    
+    <style>
+        :root { --md-sys-color-primary: #0061a4; --md-sys-color-on-surface: #1a1c1e; --md-sys-color-surface-variant: #dfe2e6; --md-sys-color-on-surface-variant: #43474e; --md-sys-color-surface-container-low: #f7f9fd; --md-sys-color-surface-container-high: #eceef4; --md-sys-color-outline: #73777f; --md-sys-color-outline-variant: #c3c6cf; --md-sys-color-surface: #fdfbff; --md-sys-color-secondary-container: #cde5ff; --md-sys-color-on-secondary-container: #001d32; --invisible-char: #73777f80; --editor-font-size: 15px; }
+        [data-theme="dark"] { --md-sys-color-primary: #9ecaff; --md-sys-color-on-surface: #e2e2e6; --md-sys-color-surface-variant: #43474e; --md-sys-color-on-surface-variant: #c3c6cf; --md-sys-color-surface-container-low: #1e2022; --md-sys-color-surface-container-high: #282a2f; --md-sys-color-outline: #8d9199; --md-sys-color-outline-variant: #43474e; --md-sys-color-surface: #1a1c1e; --md-sys-color-secondary-container: #00497d; --md-sys-color-on-secondary-container: #cde5ff; --invisible-char: #8d919980; }
+        body { margin: 0; font-family: 'Roboto', sans-serif; display: flex; height: 100vh; background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); overflow: hidden; }
+        .sidebar { position: absolute; top: 0; left: -320px; width: 300px; height: 100%; background-color: var(--md-sys-color-surface-container-low); z-index: 100; transition: left 0.3s; padding: 24px 12px; border-radius: 0 16px 16px 0; box-sizing: border-box; overflow-y: auto;}
+        .sidebar.open { left: 0; }
+        .sidebar-overlay { display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+        .sidebar-overlay.open { display: block; }
+        .app-container { display: flex; flex-direction: column; flex-grow: 1; height: 100%; min-width: 0; }
+        
+        .workspace-header { display: flex; background-color: var(--md-sys-color-surface); align-items: center; padding-left: 8px; min-height: 56px; }
+        .tabs-container { display: flex; flex-grow: 1; min-width: 0; overflow-x: auto; align-items: flex-end; height: 100%; padding-left: 12px; scrollbar-width: none; scroll-behavior: smooth; }
+        .tabs-container::-webkit-scrollbar { display: none; }
+        
+        .tab { flex-shrink: 0; background-color: transparent; color: var(--md-sys-color-on-surface-variant); height: 48px; padding: 0 16px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; position: relative; transition: color 0.2s; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .tab.active { border-bottom-color: var(--md-sys-color-primary); color: var(--md-sys-color-primary); }
+        .tab .close-tab { border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--md-sys-color-on-surface-variant); }
+        .tab.unsaved::after { content: '*'; color: var(--md-sys-color-primary); font-size: 18px; margin-left: -4px; }
+        
+        #editor-container { flex-grow: 1; position: relative; }
+        .CodeMirror { position: absolute; top: 0; bottom: 0; left: 0; right: 0; height: 100%; font-family: monospace; font-size: var(--editor-font-size); }
+        .status-bar { background-color: var(--md-sys-color-surface-container-low); height: 32px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font-size: 12px; font-weight: 500; user-select: none;}
+        .md3-nav-item { background: transparent; color: var(--md-sys-color-on-surface); border: none; padding: 12px 16px; width: 100%; text-align: left; cursor: pointer; border-radius: 100px; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500;}
+        .md3-nav-item:hover { background-color: var(--md-sys-color-surface-variant); }
+        .md3-nav-item.active { background-color: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container);}
+        
+        .icon-btn { background: transparent; border: none; color: var(--md-sys-color-on-surface); width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .icon-btn:hover { background-color: var(--md-sys-color-surface-variant); }
+        .sm-icon-btn { width: 32px; height: 32px; border-radius: 8px; }
+        .sm-icon-btn span { font-size: 20px; }
+        .sm-icon-btn.active { background-color: var(--md-sys-color-secondary-container); color: var(--md-sys-color-on-secondary-container); }
+
+        .md3-select-wrapper { padding: 0 16px; margin-bottom: 8px; position: relative; }
+        .md3-custom-select { position: relative; width: 100%; user-select: none; }
+        .md3-select-trigger { display: flex; justify-content: space-between; align-items: center; padding: 16px; background-color: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 8px; cursor: pointer; color: var(--md-sys-color-on-surface); font-size: 14px; }
+        .md3-select-menu { position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background-color: var(--md-sys-color-surface-container-high); border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 200; max-height: 280px; overflow-y: auto; opacity: 0; visibility: hidden; transition: 0.2s; border: 1px solid var(--md-sys-color-outline-variant); }
+        .md3-custom-select.open .md3-select-menu { opacity: 1; visibility: visible; }
+        .md3-select-item { padding: 12px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .md3-select-item:hover { background-color: var(--md-sys-color-surface-variant); }
+        .md3-select-item.selected { background-color: var(--md-sys-color-secondary-container); }
+        
+        .find-replace-dialog { position: absolute; top: 16px; right: 16px; z-index: 20; background-color: var(--md-sys-color-surface-container-high); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 12px; width: 340px; box-shadow: 0px 4px 12px rgba(0,0,0,0.25); display: none; flex-direction: column; gap: 8px; box-sizing: border-box; }
+        .find-replace-row { display: flex; align-items: center; gap: 6px; width: 100%; }
+        .md3-input-container { display: flex; flex-grow: 1; align-items: center; background-color: var(--md-sys-color-surface); border: 1px solid var(--md-sys-color-outline); border-radius: 4px; padding: 0 8px; height: 36px; box-sizing: border-box; }
+        .md3-input-container:focus-within { border-color: var(--md-sys-color-primary); border-width: 2px; }
+        .md3-input-container input { background: transparent; border: none; color: var(--md-sys-color-on-surface); font-family: 'Roboto', sans-serif; font-size: 14px; width: 100%; height: 100%; outline: none; }
+        .search-count { font-size: 12px; color: var(--md-sys-color-on-surface-variant); white-space: nowrap; padding-right: 4px; user-select: none; }
+    </style>
+</head>
+<body>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <nav class="sidebar" id="sidebar">
+        <div style="font-size: 22px; padding: 0 16px 24px;">Code Editor</div>
+        <button class="md3-nav-item" id="menuNew"><span class="material-symbols-outlined">note_add</span> New File <span style="margin-left:auto; opacity:0.5; font-size:12px;">Alt+N</span></button>
+        <button class="md3-nav-item" id="menuOpen"><span class="material-symbols-outlined">folder_open</span> Open File <span style="margin-left:auto; opacity:0.5; font-size:12px;">Ctrl+O</span></button>
+        <button class="md3-nav-item" id="menuSave"><span class="material-symbols-outlined">save</span> Save <span style="margin-left:auto; opacity:0.5; font-size:12px;">Ctrl+S</span></button>
+        <button class="md3-nav-item" id="menuSaveAs"><span class="material-symbols-outlined">save_as</span> Save As... <span style="margin-left:auto; opacity:0.5; font-size:12px;">Ctrl+Shift+S</span></button>
+
+        <div style="padding: 16px 16px 8px; font-size: 14px; color: var(--md-sys-color-on-surface-variant);">Language Mode</div>
+        <div class="md3-select-wrapper">
+            <div class="md3-custom-select" id="modeSelectContainer">
+                <div class="md3-select-trigger" id="modeSelectTrigger">
+                    <span id="modeSelectLabel">Plain Text</span>
+                    <span class="material-symbols-outlined">arrow_drop_down</span>
+                </div>
+                <div class="md3-select-menu" id="modeSelectMenu">
+                    <div class="md3-select-item" data-value="text/x-csrc">C</div>
+                    <div class="md3-select-item" data-value="text/x-c++src">C++</div>
+                    <div class="md3-select-item" data-value="gams">GAMS</div>
+                    <div class="md3-select-item" data-value="htmlmixed">HTML</div>
+                    <div class="md3-select-item" data-value="text/javascript">JavaScript</div>
+                    <div class="md3-select-item" data-value="application/json">JSON</div>
+                    <div class="md3-select-item" data-value="julia">Julia</div>
+                    <div class="md3-select-item" data-value="text/x-octave">MATLAB</div>
+                    <div class="md3-select-item" data-value="text/x-octave">Octave</div>
+                    <div class="md3-select-item selected" data-value="text/plain">Plain Text</div>
+                    <div class="md3-select-item" data-value="python">Python</div>
+                    <div class="md3-select-item" data-value="r">R</div>
+                    <div class="md3-select-item" data-value="tablo">TABLO</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 16px 16px 8px; font-size: 14px; color: var(--md-sys-color-on-surface-variant);">View Options</div>
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 16px; margin-bottom: 8px;">
+            <span style="font-size: 14px;">Font Size</span>
+            <div style="display: flex; align-items: center; gap: 4px; background: var(--md-sys-color-surface-container-high); padding: 4px; border-radius: 8px;">
+                <button class="icon-btn" id="fontDec" style="width:32px; height:32px;"><span class="material-symbols-outlined">remove</span></button>
+                <span id="fontSizeLabel" style="font-size: 14px; min-width: 32px; text-align: center;">15px</span>
+                <button class="icon-btn" id="fontInc" style="width:32px; height:32px;"><span class="material-symbols-outlined">add</span></button>
+            </div>
+        </div>
+        <button class="md3-nav-item active" id="menuWrap"><span class="material-symbols-outlined">wrap_text</span> Word Wrap</button>
+        <button class="md3-nav-item" id="menuTheme"><span class="material-symbols-outlined" id="themeIcon">light_mode</span> Swap Theme</button>
+    </nav>
+    
+    <div class="app-container">
+        <header class="workspace-header">
+            <button class="icon-btn" id="hamburgerBtn"><span class="material-symbols-outlined">menu</span></button>
+            <div class="tabs-container" id="tabsContainer"></div>
+            <button class="icon-btn" id="addTabBtn" style="margin-right: 8px;"><span class="material-symbols-outlined">add</span></button>
+        </header>
+        
+        <main id="editor-container">
+            <div class="find-replace-dialog" id="findReplaceDialog">
+                <div class="find-replace-row">
+                    <div class="md3-input-container">
+                        <input type="text" id="findInput" placeholder="Find">
+                        <span class="search-count" id="searchCount">0/0</span>
+                    </div>
+                    <button class="icon-btn sm-icon-btn" id="toggleCase" title="Match Case"><span class="material-symbols-outlined">match_case</span></button>
+                    <button class="icon-btn sm-icon-btn" id="findPrev" title="Previous"><span class="material-symbols-outlined">expand_less</span></button>
+                    <button class="icon-btn sm-icon-btn" id="findNext" title="Next"><span class="material-symbols-outlined">expand_more</span></button>
+                    <button class="icon-btn sm-icon-btn" id="closeFind" title="Close Panel"><span class="material-symbols-outlined">close</span></button>
+                </div>
+                <div class="find-replace-row" id="replaceRow">
+                    <div class="md3-input-container">
+                        <input type="text" id="replaceInput" placeholder="Replace with">
+                    </div>
+                    <button class="icon-btn sm-icon-btn" id="btnReplace" title="Replace"><span class="material-symbols-outlined">find_replace</span></button>
+                    <button class="icon-btn sm-icon-btn" id="btnReplaceAll" title="Replace All"><span class="material-symbols-outlined">published_with_changes</span></button>
+                    <div style="width: 32px;"></div> </div>
+            </div>
+            
+            <textarea id="editor"></textarea>
+        </main>
+        
+        <footer class="status-bar">
+            <span id="statusBarMode">Plain Text</span>
+            <span id="statusBarFileStatus">Ready</span>
+        </footer>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/simple.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/r/r.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/julia/julia.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/octave/octave.min.js"></script>
+    
+    <script>
+        // Custom Languages
+        CodeMirror.defineSimpleMode("gams", { start: [{regex: /\b(?:set|parameter|variable|equation|model|solve|display)\b/i, token: "keyword"}, {regex: /[*].*$/, token: "comment"}], meta: {lineComment: "*"} });
+        CodeMirror.defineSimpleMode("tablo", { start: [{regex: /\b(?:file|set|coefficient|read|variable|macro|equation|formula)\b/i, token: "keyword"}, {regex: /!.*$/, token: "comment"}], meta: {lineComment: "!"} });
+        
+        const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+            lineNumbers: true, 
+            theme: 'material-darker', 
+            lineWrapping: true,
+            mode: 'text/plain'
+        });
+        
+        const htmlDoc = document.documentElement;
+        let tabs = [];
+        let activeTabId = null;
+
+        // --- SIDEBAR UI LOGIC (Restored) ---
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        document.getElementById('hamburgerBtn').onclick = () => {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('open');
+        };
+        
+        sidebarOverlay.onclick = () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+        };
+
+        // Theme Toggle
+        document.getElementById('menuTheme').onclick = () => {
+            const isDark = htmlDoc.getAttribute('data-theme') === 'dark';
+            htmlDoc.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            document.getElementById('themeIcon').textContent = isDark ? 'dark_mode' : 'light_mode';
+            editor.setOption('theme', isDark ? 'eclipse' : 'material-darker');
+        };
+
+        // Word Wrap Toggle
+        const menuWrapBtn = document.getElementById('menuWrap');
+        menuWrapBtn.onclick = () => {
+            const isWrapping = editor.getOption('lineWrapping');
+            editor.setOption('lineWrapping', !isWrapping);
+            menuWrapBtn.classList.toggle('active', !isWrapping);
+        };
+
+        // Language Dropdown Logic
+        const modeSelectTrigger = document.getElementById('modeSelectTrigger');
+        const modeSelectContainer = document.getElementById('modeSelectContainer');
+        
+        modeSelectTrigger.onclick = (e) => {
+            modeSelectContainer.classList.toggle('open');
+            e.stopPropagation();
+        };
+        
+        document.addEventListener('click', () => {
+            modeSelectContainer.classList.remove('open');
+        });
+
+        document.querySelectorAll('.md3-select-item').forEach(item => {
+            item.onclick = (e) => {
+                const val = e.target.getAttribute('data-value');
+                const text = e.target.textContent;
+                
+                document.getElementById('modeSelectLabel').textContent = text;
+                document.getElementById('statusBarMode').textContent = text;
+                editor.setOption('mode', val);
+                
+                document.querySelectorAll('.md3-select-item').forEach(el => el.classList.remove('selected'));
+                e.target.classList.add('selected');
+                modeSelectContainer.classList.remove('open');
+            };
+        });
+
+        // Font Size Control
+        let currentSize = 15;
+        function updateFont(delta) { 
+            currentSize = Math.max(10, Math.min(30, currentSize + delta)); 
+            document.getElementById('fontSizeLabel').textContent = currentSize + 'px'; 
+            htmlDoc.style.setProperty('--editor-font-size', currentSize + 'px'); 
+            editor.refresh(); 
+        }
+        document.getElementById('fontInc').onclick = () => updateFont(1);
+        document.getElementById('fontDec').onclick = () => updateFont(-1);
+        
+        // --- TAB LOGIC ---
+        const tabsContainer = document.getElementById('tabsContainer');
+        tabsContainer.addEventListener('wheel', (e) => { 
+            if (e.deltaY !== 0) { e.preventDefault(); tabsContainer.scrollLeft += e.deltaY; } 
+        }, { passive: false });
+
+        tabsContainer.addEventListener('dblclick', (e) => { 
+            if (e.target === tabsContainer) createNewTab(); 
+        });
+
+        function createNewTab(name="Untitled", content="") { 
+            const id = Date.now();
+            tabs.push({id, name, doc: CodeMirror.Doc(content)}); 
+            renderTabs(); 
+            switchActiveTab(id);
+            setTimeout(() => { tabsContainer.scrollLeft = tabsContainer.scrollWidth; }, 10);
+        }
+
+        function switchActiveTab(id) {
+            const tab = tabs.find(t => t.id === id);
+            if (!tab) return;
+            activeTabId = id;
+            editor.swapDoc(tab.doc);
+            renderTabs();
+            clearSearch();
+            editor.focus();
+        }
+
+        function closeTab(id, e) {
+            e.stopPropagation();
+            const idx = tabs.findIndex(t => t.id === id);
+            if (idx === -1) return;
+            tabs.splice(idx, 1);
+            if (tabs.length === 0) createNewTab();
+            else if (activeTabId === id) switchActiveTab(tabs[Math.max(0, idx - 1)].id);
+            else renderTabs();
+        }
+
+        function renderTabs() {
+            tabsContainer.innerHTML = '';
+            tabs.forEach(tab => {
+                const tabEl = document.createElement('div');
+                tabEl.className = `tab ${tab.id === activeTabId ? 'active' : ''}`;
+                tabEl.onclick = () => switchActiveTab(tab.id);
+                const titleSpan = document.createElement('span'); titleSpan.textContent = tab.name; tabEl.appendChild(titleSpan);
+                const closeBtn = document.createElement('span'); closeBtn.className = 'material-symbols-outlined close-tab'; closeBtn.textContent = 'close';
+                closeBtn.onclick = (e) => closeTab(tab.id, e);
+                tabEl.appendChild(closeBtn); tabsContainer.appendChild(tabEl);
+            });
+        }
+
+        document.getElementById('addTabBtn').onclick = () => createNewTab();
+
+        // Drag-and-drop
+        document.getElementById('editor-container').ondragover = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; };
+        document.getElementById('editor-container').ondrop = (e) => { 
+            e.preventDefault(); 
+            const f = e.dataTransfer.files[0]; 
+            const r = new FileReader(); 
+            r.onload = (ev) => createNewTab(f.name, ev.target.result); 
+            r.readAsText(f); 
+        };
+
+        // --- FIND & REPLACE LOGIC ---
+        const findDialog = document.getElementById('findReplaceDialog');
+        const findInput = document.getElementById('findInput');
+        const replaceInput = document.getElementById('replaceInput');
+        const searchCountLabel = document.getElementById('searchCount');
+        const toggleCaseBtn = document.getElementById('toggleCase');
+        
+        let matches = [];
+        let currentMatchIdx = -1;
+        let matchCase = false;
+
+        function openFindDialog(showReplace = false) {
+            findDialog.style.display = 'flex';
+            findInput.focus();
+            findInput.select();
+            if(findInput.value) executeSearch();
+        }
+
+        function closeFindPanel() {
+            findDialog.style.display = 'none';
+            clearSearch();
+            editor.focus();
+        }
+
+        function clearSearch() {
+            matches = [];
+            currentMatchIdx = -1;
+            searchCountLabel.textContent = "0/0";
+        }
+
+        function executeSearch(selectIndex = 0) {
+            const query = findInput.value;
+            clearSearch();
+            if (!query) return;
+
+            const cursor = editor.getSearchCursor(query, CodeMirror.Pos(0, 0), !matchCase);
+            while (cursor.findNext()) {
+                matches.push({ from: cursor.from(), to: cursor.to() });
+            }
+
+            if (matches.length > 0) {
+                currentMatchIdx = Math.max(0, Math.min(selectIndex, matches.length - 1));
+                searchCountLabel.textContent = `${currentMatchIdx + 1}/${matches.length}`;
+                navigateToMatch(currentMatchIdx);
+            } else {
+                searchCountLabel.textContent = "0/0";
+            }
+        }
+
+        function navigateToMatch(index) {
+            if (matches.length === 0 || index < 0 || index >= matches.length) return;
+            const match = matches[index];
+            editor.setSelection(match.from, match.to);
+            editor.scrollIntoView({ from: match.from, to: match.to }, 150);
+        }
+
+        findInput.addEventListener('input', () => executeSearch(0));
+        
+        toggleCaseBtn.onclick = () => {
+            matchCase = !matchCase;
+            toggleCaseBtn.classList.toggle('active', matchCase);
+            executeSearch(0);
+        };
+
+        document.getElementById('findNext').onclick = () => {
+            if (matches.length === 0) return;
+            currentMatchIdx = (currentMatchIdx + 1) % matches.length;
+            searchCountLabel.textContent = `${currentMatchIdx + 1}/${matches.length}`;
+            navigateToMatch(currentMatchIdx);
+        };
+
+        document.getElementById('findPrev').onclick = () => {
+            if (matches.length === 0) return;
+            currentMatchIdx = (currentMatchIdx - 1 + matches.length) % matches.length;
+            searchCountLabel.textContent = `${currentMatchIdx + 1}/${matches.length}`;
+            navigateToMatch(currentMatchIdx);
+        };
+
+        document.getElementById('btnReplace').onclick = () => {
+            if (currentMatchIdx === -1 || matches.length === 0) return;
+            const replacement = replaceInput.value;
+            const currentMatch = matches[currentMatchIdx];
+            
+            editor.replaceRange(replacement, currentMatch.from, currentMatch.to);
+            executeSearch(currentMatchIdx);
+        };
+
+        document.getElementById('btnReplaceAll').onclick = () => {
+            const query = findInput.value;
+            if (!query) return;
+            const replacement = replaceInput.value;
+            
+            let cursor = editor.getSearchCursor(query, CodeMirror.Pos(0, 0), !matchCase);
+            editor.operation(() => {
+                while (cursor.findNext()) {
+                    cursor.replace(replacement);
+                }
+            });
+            executeSearch(0);
+        };
+
+        document.getElementById('closeFind').onclick = closeFindPanel;
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') {
+                e.preventDefault();
+                openFindDialog(false);
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'h') {
+                e.preventDefault();
+                openFindDialog(true);
+            }
+            if (e.key === 'Escape' && findDialog.style.display === 'flex') {
+                e.preventDefault();
+                closeFindPanel();
+            }
+        });
+
+        // Initialize First Tab
+        createNewTab();
+    </script>
+</body>
+</html>
