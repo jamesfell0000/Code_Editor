@@ -5,16 +5,12 @@ const ASSETS = [
     '/Code_Editor/index.html',
     '/Code_Editor/manifest.json',
     '/Code_Editor/icon.svg',
-    // CodeMirror Core Stylesheets
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/material-darker.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css',
-    // CodeMirror Core Engine
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js',
-    // CodeMirror Addons
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/mode/simple.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js', // Required for Find & Replace
-    // Syntax Language Modes
+    'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/search/searchcursor.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/r/r.min.js',
@@ -25,7 +21,6 @@ const ASSETS = [
     'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/octave/octave.min.js'
 ];
 
-// Install Lifecycle Event - Cache all application assets
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -34,7 +29,6 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// Activate Lifecycle Event - Clean up older cache versions safely
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -49,7 +43,6 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Interception - Cache-first strategy for instant loading offline
 self.addEventListener('fetch', (event) => {
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
