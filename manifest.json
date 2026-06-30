@@ -14,5 +14,28 @@
   "background_color": "#1a1c1e",
   "theme_color": "#1a1c1e",
   "display": "standalone",
-  "orientation": "any"
+  "orientation": "any",
+  "file_handlers": [
+    {
+      "action": "/Code_Editor/",
+      "name": "Source Code File",
+      "accept": {
+        "text/plain": [".txt"],
+        "text/css": [".css"],
+        "text/csv": [".csv"],
+        "text/tab-separated-values": [".tsv"],
+        "text/x-csrc": [".c", ".h"],
+        "text/x-c++src": [".cpp", ".hpp"],
+        "text/html": [".html", ".htm"],
+        "text/javascript": [".js"],
+        "application/json": [".json"],
+        "text/x-julia": [".jl"],
+        "text/x-matlab": [".m"],
+        "text/x-python": [".py"],
+        "text/x-rsrc": [".r", ".R"],
+        "text/x-gams": [".gms"],
+        "text/x-tablo": [".tab"]
+      }
+    }
+  ]
 }
