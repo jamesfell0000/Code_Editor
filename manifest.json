@@ -1,6 +1,6 @@
 {
   "short_name": "Code Editor",
-  "name": "Code Editor PWA",
+  "name": "Code Editor",
   "icons": [
     {
       "src": "/Code_Editor/icon.svg",
