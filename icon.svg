@@ -5,38 +5,31 @@
             <stop offset="0%" stop-color="#0061a4"/>
             <stop offset="100%" stop-color="#9ecaff"/>
         </linearGradient>
-        
-        <!-- Subtle Drop Shadow for depth on light background -->
-        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.15"/>
-        </filter>
     </defs>
     
     <!-- Maskable PWA Background (Light Grey) -->
     <rect width="512" height="512" rx="120" fill="#e8eaed"/>
     
-    <g filter="url(#shadow)">
-        <!-- Left Bracket (Shifted much further left to clear the slash) -->
-        <path d="M 140 160 L 40 256 L 140 352" 
-              fill="none" 
-              stroke="#43474e" 
-              stroke-width="44" 
-              stroke-linecap="round" 
-              stroke-linejoin="round"/>
-        
-        <!-- Right Bracket (Shifted much further right to clear the slash) -->
-        <path d="M 372 160 L 472 256 L 372 352" 
-              fill="none" 
-              stroke="#43474e" 
-              stroke-width="44" 
-              stroke-linecap="round" 
-              stroke-linejoin="round"/>
-        
-        <!-- Forward Slash (Centered) -->
-        <path d="M 306 116 L 206 396" 
-              fill="none" 
-              stroke="url(#primaryGrad)" 
-              stroke-width="48" 
-              stroke-linecap="round"/>
-    </g>
+    <!-- Left Bracket -->
+    <path d="M 140 160 L 40 256 L 140 352" 
+          fill="none" 
+          stroke="#43474e" 
+          stroke-width="44" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+    
+    <!-- Right Bracket -->
+    <path d="M 372 160 L 472 256 L 372 352" 
+          fill="none" 
+          stroke="#43474e" 
+          stroke-width="44" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+    
+    <!-- Forward Slash -->
+    <path d="M 306 116 L 206 396" 
+          fill="none" 
+          stroke="url(#primaryGrad)" 
+          stroke-width="48" 
+          stroke-linecap="round"/>
 </svg>
