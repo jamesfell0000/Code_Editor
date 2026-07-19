@@ -1,44 +1,38 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <!-- Background Gradient -->
-        <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#282a2f"/>
-            <stop offset="100%" stop-color="#1a1c1e"/>
-        </linearGradient>
-        
         <!-- Primary Accent Gradient -->
         <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#9ecaff"/>
-            <stop offset="100%" stop-color="#0061a4"/>
+            <stop offset="0%" stop-color="#0061a4"/>
+            <stop offset="100%" stop-color="#9ecaff"/>
         </linearGradient>
         
-        <!-- Subtle Drop Shadow for depth -->
+        <!-- Subtle Drop Shadow for depth on light background -->
         <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-            <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.4"/>
+            <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.15"/>
         </filter>
     </defs>
     
-    <!-- Maskable PWA Background -->
-    <rect width="512" height="512" rx="120" fill="url(#bgGrad)"/>
+    <!-- Maskable PWA Background (Light Grey) -->
+    <rect width="512" height="512" rx="120" fill="#e8eaed"/>
     
     <g filter="url(#shadow)">
-        <!-- Left Bracket -->
-        <path d="M 210 160 L 110 256 L 210 352" 
+        <!-- Left Bracket (Shifted much further left to clear the slash) -->
+        <path d="M 140 160 L 40 256 L 140 352" 
               fill="none" 
-              stroke="#9ecaff" 
+              stroke="#43474e" 
               stroke-width="44" 
               stroke-linecap="round" 
               stroke-linejoin="round"/>
         
-        <!-- Right Bracket -->
-        <path d="M 302 160 L 402 256 L 302 352" 
+        <!-- Right Bracket (Shifted much further right to clear the slash) -->
+        <path d="M 372 160 L 472 256 L 372 352" 
               fill="none" 
-              stroke="#9ecaff" 
+              stroke="#43474e" 
               stroke-width="44" 
               stroke-linecap="round" 
               stroke-linejoin="round"/>
         
-        <!-- Forward Slash -->
+        <!-- Forward Slash (Centered) -->
         <path d="M 306 116 L 206 396" 
               fill="none" 
               stroke="url(#primaryGrad)" 
