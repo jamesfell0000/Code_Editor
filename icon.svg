@@ -1,35 +1,29 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
     <defs>
-        <!-- Primary Accent Gradient -->
-        <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <!-- M3 Primary Gradient -->
+        <linearGradient id="m3Grad" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#0061a4"/>
             <stop offset="100%" stop-color="#9ecaff"/>
         </linearGradient>
     </defs>
     
-    <!-- Maskable PWA Background (Light Grey) -->
+    <!-- Material 3 Surface Background -->
     <rect width="512" height="512" rx="120" fill="#e8eaed"/>
     
-    <!-- Left Bracket -->
-    <path d="M 140 160 L 40 256 L 140 352" 
-          fill="none" 
-          stroke="#43474e" 
-          stroke-width="44" 
-          stroke-linecap="round" 
-          stroke-linejoin="round"/>
-    
-    <!-- Right Bracket -->
-    <path d="M 372 160 L 472 256 L 372 352" 
-          fill="none" 
-          stroke="#43474e" 
-          stroke-width="44" 
-          stroke-linecap="round" 
-          stroke-linejoin="round"/>
-    
-    <!-- Forward Slash -->
-    <path d="M 306 116 L 206 396" 
-          fill="none" 
-          stroke="url(#primaryGrad)" 
-          stroke-width="48" 
-          stroke-linecap="round"/>
+    <!-- Unified Icon Group -->
+    <g stroke-linecap="round" stroke-linejoin="round" stroke-width="56">
+        <!-- Brackets (Dark Neutral) -->
+        <path d="M 175 180 L 115 256 L 175 332" 
+              fill="none" 
+              stroke="#43474e"/>
+        
+        <path d="M 337 180 L 397 256 L 337 332" 
+              fill="none" 
+              stroke="#43474e"/>
+        
+        <!-- Forward Slash (Primary Gradient) -->
+        <path d="M 300 150 L 212 362" 
+              fill="none" 
+              stroke="url(#m3Grad)"/>
+    </g>
 </svg>
